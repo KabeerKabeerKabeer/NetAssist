@@ -24,25 +24,39 @@ st.set_page_config(
     layout="wide"  # Keep it wide for custom layout embedding
 )
 
-# Custom CSS to hide Streamlit header and footer, making the iframe go 100% full screen
+# Custom CSS to hide Streamlit headers, footers, margins and force true full-screen borderless layout
 st.markdown("""
 <style>
     /* Hide top header, sidebar background and footer */
-    header {visibility: hidden;}
-    .main .block-container {
-        padding-top: 0rem !important;
-        padding-bottom: 0rem !important;
-        padding-left: 0rem !important;
-        padding-right: 0rem !important;
-    }
-    iframe {
-        border: none !important;
-        width: 100% !important;
-        height: 100vh !important;
-        overflow: hidden !important;
-    }
+    header {visibility: hidden; height: 0px !important;}
     #MainMenu {visibility: hidden;}
     footer {visibility: hidden;}
+    
+    /* Remove padding/margin on main wrapper */
+    .main .block-container {
+        padding: 0px !important;
+        margin: 0px !important;
+        max-width: 100vw !important;
+        width: 100vw !important;
+        height: 100vh !important;
+    }
+    
+    /* Stretch custom component container to full viewport width/height */
+    div[data-testid="stVerticalBlock"] > div {
+        padding: 0px !important;
+        margin: 0px !important;
+    }
+    
+    /* Force component iframe to take up the full screen */
+    iframe {
+        border: none !important;
+        width: 100vw !important;
+        height: 100vh !important;
+        display: block !important;
+        margin: 0px !important;
+        padding: 0px !important;
+        overflow: hidden !important;
+    }
 </style>
 """, unsafe_allow_html=True)
 
