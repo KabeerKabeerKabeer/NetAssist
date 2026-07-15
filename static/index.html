@@ -430,7 +430,7 @@
         class="flex-1 w-full max-w-5xl mx-auto px-4 pt-4 pb-4 relative z-10 flex flex-col overflow-hidden transition-transform duration-300 ease-out">
 
         <!-- Chat Area (Glass Container with rich, classy blue drop-shadow and glow) -->
-        <div class="flex-1 overflow-y-auto w-full glass-panel rounded-2xl flex flex-col p-4 md:p-6 mb-4 transition-all duration-300 shadow-[0_16px_48px_rgba(27,117,187,0.12),_0_0_35px_rgba(27,117,187,0.05)] dark:shadow-[0_20px_60px_rgba(0,0,0,0.55),_0_0_40px_rgba(14,165,233,0.08)]"
+        <div class="flex-1 overflow-y-auto w-full glass-panel rounded-2xl flex flex-col p-4 md:p-6 mb-4 transition-all duration-300 shadow-none dark:shadow-[0_20px_60px_rgba(0,0,0,0.55),_0_0_40px_rgba(14,165,233,0.08)]"
             id="chat-scroller">
             <div class="flex-1 flex flex-col gap-6" id="chat-messages">
                 <!-- Welcome View (Shown when no messages exist) -->
@@ -502,7 +502,7 @@
 
             <!-- Input Frame -->
             <div
-                class="glass-panel rounded-2xl flex items-center p-1.5 glimmer-border shadow-lg transition-all duration-300">
+                class="glass-panel rounded-2xl flex items-center p-1.5 glimmer-border shadow-none dark:shadow-lg transition-all duration-300">
                 <!-- Hidden File Input -->
                 <input type="file" id="file-input" class="hidden" accept=".pdf,.docx,.doc,.txt,.md"
                     onchange="handleFileSelected()">
