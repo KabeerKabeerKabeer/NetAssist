@@ -1079,9 +1079,17 @@
                     float dotRadius = mix(0.08, 0.22, smoothstep(0.20, 0.0, dist));
                     float dots = smoothstep(dotRadius, dotRadius - 0.04, length(grid));
                     
-                    // Adaptive dot color and strength for higher contrast & mouse reactivity
-                    vec3 dotColor = mix(vec3(0.55, 0.62, 0.72), vec3(0.0, 0.6, 0.9), u_dark);
-                    float dotOpacity = mix(0.32, 0.60, smoothstep(0.20, 0.0, dist));
+                    // Gradient dot color based on vertical position (uv.y) and theme
+                    // Light mode: Muted slate-blue (bottom) to soft primary blue (top)
+                    vec3 lightDotGrad = mix(vec3(0.68, 0.72, 0.78), vec3(0.35, 0.55, 0.75), uv.y);
+                    
+                    // Dark mode: Deep subtle navy (bottom) to electric cyan-blue (top)
+                    vec3 darkDotGrad = mix(vec3(0.04, 0.16, 0.32), vec3(0.0, 0.45, 0.75), uv.y);
+                    
+                    vec3 dotColor = mix(lightDotGrad, darkDotGrad, u_dark);
+                    
+                    // Extremely subtle, premium visibility opacity scale
+                    float dotOpacity = mix(0.12, 0.38, smoothstep(0.20, 0.0, dist));
                     color = mix(color, dotColor, dots * dotOpacity);
                     
                     // Dither noise
