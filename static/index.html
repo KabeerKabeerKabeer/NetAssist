@@ -1042,9 +1042,10 @@
                     vec2 uv = v_texCoord;
                     vec2 mouse = u_mouse / u_resolution;
                     
-                    // Diagonal periodic gradient pattern for dot colors & background pulses (animated flow)
+                    // Diagonal periodic gradient pattern with sharp ripple crests and faster flow speed
                     float diag = uv.x + uv.y;
-                    float wavePattern = sin(diag * 7.5 - u_time * 0.6) * 0.5 + 0.5;
+                    float rawWave = sin(diag * 12.0 - u_time * 1.8) * 0.5 + 0.5;
+                    float wavePattern = pow(rawWave, 4.0);
                     
                     // Smooth moving gradients
                     float bg_light = 0.95 + 0.05 * sin(uv.x * 2.0 + u_time * 0.4);
