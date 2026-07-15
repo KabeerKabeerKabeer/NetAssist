@@ -46,9 +46,9 @@ async def routeQueryNode(stateData: ChatbotState) -> Dict[str, Any]:
     
     Data Categories:
     - SQL: Employee data, salaries, roles, departments, technical skills.
-    - VECTOR: Netsol enterprise services, platforms (e.g. Transcend), consulting, or website info.
+    - VECTOR: Netsol enterprise services, platforms (e.g. Transcend), website info, OR questions asking about your own identity (e.g., "who are you?", "what can you do?", "introduce yourself", "how can you help me").
     - HYBRID: Requires cross-referencing employee profiles WITH company product/service info.
-    - OUT_OF_DOMAIN: Anything completely unrelated to Netsol Technologies or its employees.
+    - OUT_OF_DOMAIN: Anything completely unrelated to Netsol Technologies, its employees, or your own helper capabilities.
     
     Respond with ONLY ONE WORD from this exact list: SQL, VECTOR, HYBRID, or OUT_OF_DOMAIN.
     """
@@ -307,6 +307,21 @@ async def synthesizeResponseNode(stateData: ChatbotState) -> Dict[str, Any]:
     """
     userQuery = stateData.get("userQuery")
     queryIntent = stateData.get("queryIntent")
+    
+    # 1. Catch assistant identity/capability queries for playful custom answers
+    lowerQuery = userQuery.lower().strip()
+    if any(q in lowerQuery for q in ["who are you", "your name", "introduce yourself"]):
+        return {"finalResponse": "I am **NetAssist**! 🤖 Created specifically to help you with all your NETSOL Technologies questions, database queries, and document analysis."}
+    
+    if any(q in lowerQuery for q in ["what can you do", "what do you do", "how can you help", "your capabilities"]):
+        return {
+            "finalResponse": (
+                "I can answer all your NETSOL queries! Here is how I can help:\n\n"
+                "*   **Query Employee Profiles (SQL):** Search for designations, joining dates, salaries, or skills (e.g., *'Find who has the highest tenure in the tech division'*).\n"
+                "*   **Explore Corporate Data (Vector):** Learn about NETSOL's platforms like Transcend, retail products, or company services.\n"
+                "*   **Document Analysis (File RAG):** Upload files (.pdf, .docx, .doc, .txt, .md) to search and analyze their contents instantly."
+            )
+        }
     
     if queryIntent == "OUT_OF_DOMAIN":
         return {"finalResponse": "I apologize, but I am specifically designed to assist with Netsol Technologies' enterprise services and internal employee data. I cannot answer queries outside of this domain."}
