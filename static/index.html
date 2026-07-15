@@ -69,6 +69,26 @@
                 0 8px 32px 0 rgba(0, 0, 0, 0.37);
         }
 
+        .glass-header {
+            background: rgba(255, 255, 255, 0.15);
+            backdrop-filter: blur(28px);
+            -webkit-backdrop-filter: blur(28px);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.50);
+            box-shadow: 
+                inset 0 1px 0 rgba(255, 255, 255, 0.60), 
+                inset 0 -1px 0 rgba(0, 0, 0, 0.08),
+                0 4px 20px 0 rgba(0, 0, 0, 0.03);
+        }
+
+        .dark .glass-header {
+            background: rgba(10, 18, 36, 0.22);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.12);
+            box-shadow: 
+                inset 0 1px 0 rgba(255, 255, 255, 0.25), 
+                inset 0 -1px 0 rgba(0, 0, 0, 0.45),
+                0 4px 20px 0 rgba(0, 0, 0, 0.15);
+        }
+
         .glimmer-border {
             position: relative;
         }
@@ -261,7 +281,7 @@
 
     <!-- Navigation Header -->
     <header
-        class="flex justify-between items-center px-4 md:px-8 py-3 w-full bg-glass-white/70 dark:bg-glass-dark/70 backdrop-blur-xl border-b border-surface-stroke dark:border-surface-stroke-dark shadow-sm transition-all duration-300 ease-out flex-shrink-0 z-40">
+        class="flex justify-between items-center px-4 md:px-8 py-3 w-full glass-header transition-all duration-300 ease-out flex-shrink-0 z-40">
         <div class="flex items-center gap-3">
             <!-- Animated SVG Logo -->
             <div class="w-8 h-8 rounded-full overflow-hidden flex items-center justify-center bg-transparent">
@@ -316,18 +336,18 @@
         <!-- Controls -->
         <div class="flex items-center gap-2">
             <button onclick="toggleDarkMode()"
-                class="p-2 rounded-full text-slate-500 hover:text-vibrant-blue hover:bg-slate-100 dark:text-slate-400 dark:hover:text-primary-dark dark:hover:bg-slate-800/50 transition-all active:scale-95"
+                class="p-2 rounded-full text-slate-500 hover:text-vibrant-blue hover:bg-slate-100 dark:text-slate-400 dark:hover:text-primary-dark dark:hover:bg-slate-800/50 transition-all active:scale-95 flex items-center justify-center"
                 title="Toggle Theme">
-                <span class="material-symbols-outlined block dark:hidden">dark_mode</span>
-                <span class="material-symbols-outlined hidden dark:block">light_mode</span>
+                <span class="material-symbols-outlined dark:hidden">dark_mode</span>
+                <span class="material-symbols-outlined hidden dark:inline-block">light_mode</span>
             </button>
             <button onclick="toggleSidebar('history-sidebar')"
-                class="p-2 rounded-full text-slate-500 hover:text-vibrant-blue hover:bg-slate-100 dark:text-slate-400 dark:hover:text-primary-dark dark:hover:bg-slate-800/50 transition-all active:scale-95"
+                class="p-2 rounded-full text-slate-500 hover:text-vibrant-blue hover:bg-slate-100 dark:text-slate-400 dark:hover:text-primary-dark dark:hover:bg-slate-800/50 transition-all active:scale-95 flex items-center justify-center"
                 title="Chat History">
                 <span class="material-symbols-outlined">history</span>
             </button>
             <button onclick="toggleSidebar('settings-sidebar')"
-                class="p-2 rounded-full text-slate-500 hover:text-vibrant-blue hover:bg-slate-100 dark:text-slate-400 dark:hover:text-primary-dark dark:hover:bg-slate-800/50 transition-all active:scale-95"
+                class="p-2 rounded-full text-slate-500 hover:text-vibrant-blue hover:bg-slate-100 dark:text-slate-400 dark:hover:text-primary-dark dark:hover:bg-slate-800/50 transition-all active:scale-95 flex items-center justify-center"
                 title="Settings">
                 <span class="material-symbols-outlined">settings</span>
             </button>
