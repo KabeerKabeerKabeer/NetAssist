@@ -1079,9 +1079,9 @@
                     float dotRadius = mix(0.08, 0.22, smoothstep(0.20, 0.0, dist));
                     float dots = smoothstep(dotRadius, dotRadius - 0.04, length(grid));
                     
-                    // Diagonal periodic gradient pattern for dot colors (multiple light/dark bands)
+                    // Diagonal periodic gradient pattern for dot colors (multiple light/dark bands, animated flow)
                     float diag = uv.x + uv.y;
-                    float wavePattern = sin(diag * 7.5) * 0.5 + 0.5;
+                    float wavePattern = sin(diag * 7.5 - u_time * 0.6) * 0.5 + 0.5;
                     
                     // Light mode: Slate-blue to soft primary blue diagonal wave
                     vec3 lightDotGrad = mix(vec3(0.70, 0.74, 0.80), vec3(0.38, 0.58, 0.78), wavePattern);
