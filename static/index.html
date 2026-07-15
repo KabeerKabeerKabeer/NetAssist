@@ -1042,9 +1042,10 @@
                     vec2 uv = v_texCoord;
                     vec2 mouse = u_mouse / u_resolution;
                     
-                    // Diagonal periodic gradient pattern with sharp ripple crests and faster flow speed
-                    float diag = uv.x + uv.y;
-                    float rawWave = sin(diag * 12.0 - u_time * 1.8) * 0.5 + 0.5;
+                    // Diagonal periodic gradient pattern with wobbly ripple waves
+                    float wavePerturb = sin((uv.x - uv.y) * 6.0 + u_time * 0.8) * 0.12;
+                    float diag = uv.x + uv.y + wavePerturb;
+                    float rawWave = sin(diag * 7.0 - u_time * 1.8) * 0.5 + 0.5;
                     float wavePattern = pow(rawWave, 4.0);
                     
                     // Smooth moving gradients
