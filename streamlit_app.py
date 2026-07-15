@@ -19,8 +19,8 @@ class StreamlitFileMock:
 
 # Page configuration
 st.set_page_config(
-    page_title="NetAssist | Netsol Hybrid RAG",
-    page_icon="🤖",
+    page_title="NetAssist",
+    page_icon="static/favicon.png",
     layout="wide"  # Keep it wide for custom layout embedding
 )
 
