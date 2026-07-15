@@ -320,26 +320,35 @@
             <div class="flex-1 flex flex-col gap-6" id="chat-messages">
                 <!-- Welcome View (Shown when no messages exist) -->
                 <div class="flex-1 flex flex-col items-center justify-center text-center p-8 max-w-2xl mx-auto space-y-6 my-auto" id="welcome-view">
-                    <div class="w-16 h-16 rounded-2xl bg-vibrant-blue/10 dark:bg-primary-dark/10 flex items-center justify-center text-vibrant-blue dark:text-primary-dark animate-bounce">
-                        <span class="material-symbols-outlined text-4xl font-semibold">terminal</span>
+                    <div class="w-16 h-16 flex items-center justify-center animate-bounce bg-transparent">
+                        <svg viewBox="0 0 285 285" xmlns="http://www.w3.org/2000/svg" class="w-full h-full">
+                            <defs>
+                                <linearGradient id="welcome-logo-glimmer" x1="0%" x2="100%" y1="0%" y2="100%">
+                                    <stop offset="0%" stop-color="rgba(255,255,255,0)"></stop>
+                                    <stop offset="50%" stop-color="rgba(255,255,255,0.85)">
+                                        <animate attributeName="offset" dur="3.5s" repeatCount="indefinite" values="-0.5; 1.5"></animate>
+                                    </stop>
+                                    <stop offset="100%" stop-color="rgba(255,255,255,0)"></stop>
+                                </linearGradient>
+                                <mask id="welcome-logoMask">
+                                    <path d="m949.5 548.9c0-.2 0-.2 0 0l-948.2-548h-.2v326.5c0 76 41.7 142.2 103.2 177.3v0l948.2 547.8h.2v-326.6c-.1-75.9-41.6-142-103.2-177z" fill="white" transform="matrix(.25181468 0 0 .25181468 1.7230039 1.7733668)"></path>
+                                    <path d="m102.8 724.9c.2 0 .2 0 0 0-55.4-31.8-94.4-88.4-101.7-154.9v482.2l334.4-193z" fill="white" transform="matrix(.25181468 0 0 .25181468 1.7230039 1.7733668)"></path>
+                                    <path d="m951.1 328.6c0 0-.2 0 0 0 55.4 31.8 94.4 88.4 101.7 154.8v-482.3l-334.4 193z" fill="white" transform="matrix(.25181468 0 0 .25181468 1.7230039 1.7733668)"></path>
+                                </mask>
+                            </defs>
+                            <g transform="matrix(.25181468 0 0 .25181468 1.7230039 1.7733668)">
+                                <path d="m949.5 548.9c0-.2 0-.2 0 0l-948.2-548h-.2v326.5c0 76 41.7 142.2 103.2 177.3v0l948.2 547.8h.2v-326.6c-.1-75.9-41.6-142-103.2-177z" class="fill-vibrant-blue dark:fill-primary-dark"></path>
+                                <path d="m102.8 724.9c.2 0 .2 0 0 0-55.4-31.8-94.4-88.4-101.7-154.9v482.2l334.4-193z" class="fill-vibrant-blue dark:fill-primary-dark"></path>
+                                <path d="m951.1 328.6c0 0-.2 0 0 0 55.4 31.8 94.4 88.4 101.7 154.8v-482.3l-334.4 193z" class="fill-vibrant-blue dark:fill-primary-dark"></path>
+                            </g>
+                            <rect fill="url(#welcome-logo-glimmer)" height="100%" mask="url(#welcome-logoMask)" width="100%"></rect>
+                        </svg>
                     </div>
                     <div class="space-y-2">
                         <h2 class="text-2xl md:text-3xl font-bold tracking-tight">How can I assist you today?</h2>
-                        <p class="text-slate-500 dark:text-slate-400 text-sm md:text-base leading-relaxed">
-                            Query the Netsol SQL database, search uploaded documentation, or analyze files directly using our agentic hybrid RAG pipeline.
+                        <p class="text-slate-500 dark:text-slate-400 text-sm md:text-base leading-relaxed font-medium">
+                            For all your NETSOL inquiries
                         </p>
-                    </div>
-
-                    <!-- Prompt Suggestion Cards -->
-                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 w-full max-w-xl pt-4">
-                        <button onclick="usePresetPrompt('Show all employee departments and core teams.')" class="p-3 text-left rounded-xl border border-slate-200 dark:border-slate-800 hover:border-vibrant-blue dark:hover:border-primary-dark bg-white/40 dark:bg-slate-900/30 text-xs md:text-sm transition-all hover:scale-[1.02] active:scale-95 flex items-center gap-3">
-                            <span class="material-symbols-outlined text-slate-400">table_chart</span>
-                            <span>List Employee Departments</span>
-                        </button>
-                        <button onclick="usePresetPrompt('Find the employees with the highest tenure in the company.')" class="p-3 text-left rounded-xl border border-slate-200 dark:border-slate-800 hover:border-vibrant-blue dark:hover:border-primary-dark bg-white/40 dark:bg-slate-900/30 text-xs md:text-sm transition-all hover:scale-[1.02] active:scale-95 flex items-center gap-3">
-                            <span class="material-symbols-outlined text-slate-400">person_search</span>
-                            <span>Find High Tenure Employees</span>
-                        </button>
                     </div>
                 </div>
             </div>
