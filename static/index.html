@@ -722,13 +722,13 @@
             const timeString = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
 
             if (role === 'user') {
-                const attachmentRegex = /^\[Attachment:\s*(.+?)\]\s*(.*)$/;
+                const attachmentRegex = /(?:\n?\*?\[(?:Attached\s+Document|Attachment):\s*(.+?)\]\*?)/i;
                 const match = text.match(attachmentRegex);
                 
                 let innerContent = '';
                 if (match) {
                     const filename = match[1];
-                    const queryText = match[2].trim();
+                    const queryText = text.replace(match[0], '').trim();
                     innerContent = `
                         <div class="flex flex-col gap-2 items-end">
                             <div class="flex items-center gap-2.5 px-3 py-2 rounded-xl bg-slate-900/60 dark:bg-slate-800/80 border border-vibrant-blue/30 dark:border-primary-dark/30 text-[11px] font-semibold select-none shadow-[0_4px_12px_rgba(0,0,0,0.1)] backdrop-blur text-white flex-shrink-0">
