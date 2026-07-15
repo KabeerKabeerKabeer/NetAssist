@@ -722,10 +722,36 @@
             const timeString = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
 
             if (role === 'user') {
+                const attachmentRegex = /^\[Attachment:\s*(.+?)\]\s*(.*)$/;
+                const match = text.match(attachmentRegex);
+                
+                let innerContent = '';
+                if (match) {
+                    const filename = match[1];
+                    const queryText = match[2].trim();
+                    innerContent = `
+                        <div class="flex flex-col gap-2 items-end">
+                            <div class="flex items-center gap-2.5 px-3 py-2 rounded-xl bg-slate-900/60 dark:bg-slate-800/80 border border-vibrant-blue/30 dark:border-primary-dark/30 text-[11px] font-semibold select-none shadow-[0_4px_12px_rgba(0,0,0,0.1)] backdrop-blur text-white flex-shrink-0">
+                                <span class="material-symbols-outlined text-sm text-cyan-300">description</span>
+                                <span class="truncate max-w-[200px]">${escapeHtml(filename)}</span>
+                            </div>
+                            ${queryText ? `
+                                <div class="px-4 py-2.5 rounded-2xl rounded-tr-sm bg-slate-900 text-white dark:bg-slate-800 text-sm leading-relaxed border border-vibrant-blue/40 dark:border-primary-dark/35 shadow-[0_6px_20px_rgba(27,117,187,0.16),_0_0_12px_rgba(27,117,187,0.28)] dark:shadow-[0_8px_24px_rgba(0,0,0,0.3),_0_0_12px_rgba(14,165,233,0.32)]">
+                                    ${escapeHtml(queryText)}
+                                </div>
+                            ` : ''}
+                        </div>
+                    `;
+                } else {
+                    innerContent = `
+                        <div class="px-4 py-2.5 rounded-2xl rounded-tr-sm bg-slate-900 text-white dark:bg-slate-800 text-sm leading-relaxed border border-vibrant-blue/40 dark:border-primary-dark/35 shadow-[0_6px_20px_rgba(27,117,187,0.16),_0_0_12px_rgba(27,117,187,0.28)] dark:shadow-[0_8px_24px_rgba(0,0,0,0.3),_0_0_12px_rgba(14,165,233,0.32)]">
+                            ${escapeHtml(text)}
+                        </div>
+                    `;
+                }
+
                 messageDiv.innerHTML = `
-                    <div class="px-4 py-2.5 rounded-2xl rounded-tr-sm bg-slate-900 text-white dark:bg-slate-800 text-sm leading-relaxed border border-vibrant-blue/40 dark:border-primary-dark/35 shadow-[0_6px_20px_rgba(27,117,187,0.16),_0_0_12px_rgba(27,117,187,0.28)] dark:shadow-[0_8px_24px_rgba(0,0,0,0.3),_0_0_12px_rgba(14,165,233,0.32)]">
-                        ${escapeHtml(text)}
-                    </div>
+                    ${innerContent}
                     <span class="text-[10px] text-slate-400 dark:text-slate-500 font-mono px-1">${timeString}</span>
                 `;
             } else {
