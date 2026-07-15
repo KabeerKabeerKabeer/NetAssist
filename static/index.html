@@ -1088,8 +1088,8 @@
                     
                     vec3 dotColor = mix(lightDotGrad, darkDotGrad, u_dark);
                     
-                    // Extremely subtle, premium visibility opacity scale
-                    float dotOpacity = mix(0.12, 0.38, smoothstep(0.20, 0.0, dist));
+                    // Original high-visibility dot opacity scale
+                    float dotOpacity = mix(0.32, 0.60, smoothstep(0.20, 0.0, dist));
                     color = mix(color, dotColor, dots * dotOpacity);
                     
                     // Dither noise
