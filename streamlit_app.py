@@ -134,8 +134,19 @@ if component_value and component_value.get("timestamp", 0) > st.session_state.pr
     )
     
     try:
-        # Run the async invoker in an event loop
-        finalState = asyncio.run(chatbotApp.ainvoke(initialState))
+        # Resolve loop lifecycle safety within Streamlit execution threads
+        try:
+            loop = asyncio.get_event_loop()
+        except RuntimeError:
+            loop = asyncio.new_event_loop()
+            asyncio.set_event_loop(loop)
+            
+        if loop.is_closed():
+            loop = asyncio.new_event_loop()
+            asyncio.set_event_loop(loop)
+            
+        # Run the async invoker on the active thread loop
+        finalState = loop.run_until_complete(chatbotApp.ainvoke(initialState))
         response = finalState.get("finalResponse", "I am unable to answer that at the moment.")
         intent = finalState.get("queryIntent", "UNKNOWN")
     except Exception as e:
