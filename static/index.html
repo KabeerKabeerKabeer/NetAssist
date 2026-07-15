@@ -287,12 +287,11 @@
             <div class="w-8 h-8 rounded-full overflow-hidden flex items-center justify-center bg-transparent">
                 <svg viewBox="0 0 285 285" xmlns="http://www.w3.org/2000/svg" class="w-full h-full">
                     <defs>
-                        <linearGradient id="logo-glimmer" x1="0%" x2="100%" y1="0%" y2="100%">
+                        <linearGradient id="logo-glimmer" x1="-100%" x2="0%" y1="0%" y2="100%">
+                            <animate attributeName="x1" dur="4s" repeatCount="indefinite" values="-100%; 100%"></animate>
+                            <animate attributeName="x2" dur="4s" repeatCount="indefinite" values="0%; 200%"></animate>
                             <stop offset="0%" stop-color="rgba(255,255,255,0)"></stop>
-                            <stop offset="50%" stop-color="rgba(255,255,255,0.85)">
-                                <animate attributeName="offset" dur="3.5s" repeatCount="indefinite" values="-0.5; 1.5">
-                                </animate>
-                            </stop>
+                            <stop offset="50%" stop-color="rgba(255,255,255,0.75)"></stop>
                             <stop offset="100%" stop-color="rgba(255,255,255,0)"></stop>
                         </linearGradient>
                         <mask id="logoMask">
@@ -439,12 +438,11 @@
                     <div class="w-16 h-16 flex items-center justify-center animate-bounce bg-transparent">
                         <svg viewBox="0 0 285 285" xmlns="http://www.w3.org/2000/svg" class="w-full h-full">
                             <defs>
-                                <linearGradient id="welcome-logo-glimmer" x1="0%" x2="100%" y1="0%" y2="100%">
+                                <linearGradient id="welcome-logo-glimmer" x1="-100%" x2="0%" y1="0%" y2="100%">
+                                    <animate attributeName="x1" dur="4s" repeatCount="indefinite" values="-100%; 100%"></animate>
+                                    <animate attributeName="x2" dur="4s" repeatCount="indefinite" values="0%; 200%"></animate>
                                     <stop offset="0%" stop-color="rgba(255,255,255,0)"></stop>
-                                    <stop offset="50%" stop-color="rgba(255,255,255,0.85)">
-                                        <animate attributeName="offset" dur="3.5s" repeatCount="indefinite"
-                                            values="-0.5; 1.5"></animate>
-                                    </stop>
+                                    <stop offset="50%" stop-color="rgba(255,255,255,0.75)"></stop>
                                     <stop offset="100%" stop-color="rgba(255,255,255,0)"></stop>
                                 </linearGradient>
                                 <mask id="welcome-logoMask">
