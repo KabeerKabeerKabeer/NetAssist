@@ -336,7 +336,7 @@ async def synthesizeResponseNode(stateData: ChatbotState) -> Dict[str, Any]:
         return {
             "finalResponse": (
                 "I can answer all your NETSOL queries! Here is how I can help:\n\n"
-                "*   **Query Employee Profiles (SQL):** Search for designations, joining dates, salaries, or skills (e.g., *'Find who has the highest tenure in the tech division'*).\n"
+                "*   **Query Employee Profiles (SQL):** Search for designations, joining dates, salaries, or skills (e.g., *'Find the employees with the highest tenure in the company'*).\n"
                 "*   **Explore Corporate Data (Vector):** Learn about NETSOL's platforms like Transcend, retail products, or company services.\n"
                 "*   **Document Analysis (File RAG):** Upload files (.pdf, .docx, .doc, .txt, .md) to search and analyze their contents instantly."
             )
