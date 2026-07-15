@@ -1066,7 +1066,7 @@
                     float dist = distance(uv, mouse);
                     float glow = smoothstep(0.08, 0.0, dist);
                     vec3 glow_color = mix(vec3(0.05, 0.35, 0.65), vec3(0.015, 0.38, 0.72), u_dark);
-                    color = mix(color, glow_color, glow * 0.25);
+                    color = mix(color, glow_color, glow * 0.09); // Muted to same 9% intensity as the bright line
                     
                     // Moving floating ambient blobs
                     for(int i = 0; i < 3; i++) {
@@ -1096,10 +1096,10 @@
                     vec3 dotColor = mix(lightDotGrad, darkDotGrad, u_dark);
                     
                     // Glow effect on dots near the mouse cursor (enlighten to bright blue)
-                    dotColor = mix(dotColor, vec3(0.0, 0.55, 0.95), hoverGlow * 0.75);
+                    dotColor = mix(dotColor, vec3(0.0, 0.55, 0.95), hoverGlow * 0.40); // Muted to match the bright line
                     
-                    // Original high-visibility dot opacity scale (boosted to 0.85 near cursor for glowing dot pop)
-                    float dotOpacity = mix(0.32, 0.85, hoverGlow);
+                    // Original high-visibility dot opacity scale (boosted to 0.70 near cursor for glowing dot pop)
+                    float dotOpacity = mix(0.32, 0.70, hoverGlow);
                     color = mix(color, dotColor, dots * dotOpacity);
                     
                     // Dither noise
@@ -1150,8 +1150,10 @@
             
             // Unified Mousemove listener: Shader coordinates + parallax effects
             window.addEventListener('mousemove', (e) => {
-                mouse.x = e.clientX;
-                mouse.y = window.innerHeight - e.clientY;
+                const rect = canvas.getBoundingClientRect();
+                // Mathematically map screen mouse coordinates into WebGL viewport coordinates accurately
+                mouse.x = ((e.clientX - rect.left) / rect.width) * canvas.width;
+                mouse.y = ((rect.bottom - e.clientY) / rect.height) * canvas.height;
                 
                 // Subtle parallax translations (reduced intensity for smooth depth)
                 const dx = (e.clientX - window.innerWidth / 2) / (window.innerWidth / 2);
