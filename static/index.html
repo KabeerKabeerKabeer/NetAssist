@@ -706,6 +706,13 @@
             window.addEventListener("resize", setStreamlitFrameHeight);
             setInterval(setStreamlitFrameHeight, 500);
 
+            // Signal to Streamlit that the component is loaded and ready
+            window.parent.postMessage({
+                isStreamlitMessage: true,
+                type: "streamlit:componentReady",
+                apiVersion: 1
+            }, "*");
+
             let lastProcessedTimestamp = 0;
             window.addEventListener("message", (event) => {
                 const msg = event.data;
