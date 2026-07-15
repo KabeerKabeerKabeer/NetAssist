@@ -1042,6 +1042,10 @@
                     vec2 uv = v_texCoord;
                     vec2 mouse = u_mouse / u_resolution;
                     
+                    // Diagonal periodic gradient pattern for dot colors & background pulses (animated flow)
+                    float diag = uv.x + uv.y;
+                    float wavePattern = sin(diag * 7.5 - u_time * 0.6) * 0.5 + 0.5;
+                    
                     // Smooth moving gradients
                     float bg_light = 0.95 + 0.05 * sin(uv.x * 2.0 + u_time * 0.4);
                     float dGlow = distance(uv, vec2(0.25, 0.65));
@@ -1050,15 +1054,16 @@
                     vec3 lightBg = mix(vec3(0.88, 0.93, 0.97), vec3(0.97, 0.98, 0.99), smoothstep(0.1, 0.9, dGlow));
                     lightBg += (bg_light - 0.95) * 0.35; // Add subtle organic motion
                     
-                    // Subtle radial blue-black gradient for dark mode depth
-                    vec3 darkBg = mix(vec3(0.012, 0.042, 0.092), vec3(0.003, 0.005, 0.012), smoothstep(0.1, 0.9, dGlow));
+                    // Subtle radial deep navy gradient for dark mode depth, with electric blue pulse
+                    vec3 darkBgBase = mix(vec3(0.004, 0.008, 0.022), vec3(0.008, 0.035, 0.085), smoothstep(0.1, 0.9, dGlow));
+                    vec3 darkBg = mix(darkBgBase, vec3(0.0, 0.42, 0.85), wavePattern * 0.09); // Classy electric blue pulse
                     
                     // Mix light background color with dark gradient background based on theme mode
                     vec3 color = mix(lightBg, darkBg, u_dark);
                     
-                    // Soft glow following cursor
+                    // Soft glow following cursor (reduced area of effect)
                     float dist = distance(uv, mouse);
-                    float glow = smoothstep(0.45, 0.0, dist);
+                    float glow = smoothstep(0.22, 0.0, dist);
                     vec3 glow_color = mix(vec3(0.1, 0.46, 0.73), vec3(0.04, 0.6, 0.85), u_dark);
                     color = mix(color, glow_color, glow * 0.14);
                     
@@ -1079,15 +1084,11 @@
                     float dotRadius = mix(0.08, 0.22, smoothstep(0.20, 0.0, dist));
                     float dots = smoothstep(dotRadius, dotRadius - 0.04, length(grid));
                     
-                    // Diagonal periodic gradient pattern for dot colors (multiple light/dark bands, animated flow)
-                    float diag = uv.x + uv.y;
-                    float wavePattern = sin(diag * 7.5 - u_time * 0.6) * 0.5 + 0.5;
-                    
                     // Light mode: Slate-blue to soft primary blue diagonal wave
-                    vec3 lightDotGrad = mix(vec3(0.70, 0.74, 0.80), vec3(0.38, 0.58, 0.78), wavePattern);
+                    vec3 lightDotGrad = mix(vec3(0.70, 0.74, 0.80), vec3(0.25, 0.55, 0.85), wavePattern);
                     
                     // Dark mode: Deep subtle navy to electric cyan-blue diagonal wave
-                    vec3 darkDotGrad = mix(vec3(0.04, 0.16, 0.32), vec3(0.0, 0.48, 0.80), wavePattern);
+                    vec3 darkDotGrad = mix(vec3(0.008, 0.06, 0.18), vec3(0.0, 0.65, 1.0), wavePattern);
                     
                     vec3 dotColor = mix(lightDotGrad, darkDotGrad, u_dark);
                     
