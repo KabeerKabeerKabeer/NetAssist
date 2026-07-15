@@ -1042,9 +1042,9 @@
                     vec2 uv = v_texCoord;
                     vec2 mouse = u_mouse / u_resolution;
                     
-                    // Diagonal periodic gradient pattern with sharp ripple crests and slower flow speed
+                    // Diagonal periodic gradient pattern with sharp ripple crests (slightly faster and more spaced out)
                     float diag = uv.x + uv.y;
-                    float rawWave = sin(diag * 12.0 - u_time * 0.9) * 0.5 + 0.5;
+                    float rawWave = sin(diag * 9.0 - u_time * 1.3) * 0.5 + 0.5;
                     float wavePattern = pow(rawWave, 4.0);
                     
                     // Smooth moving gradients
@@ -1062,10 +1062,10 @@
                     // Mix light background color with dark gradient background based on theme mode
                     vec3 color = mix(lightBg, darkBg, u_dark);
                     
-                    // Soft glow following cursor (tight area of effect, intense electric blue)
+                    // Soft glow following cursor (extremely tight, matching brightest background gradient shade)
                     float dist = distance(uv, mouse);
-                    float glow = smoothstep(0.15, 0.0, dist);
-                    vec3 glow_color = vec3(0.0, 0.55, 1.0); // Intense electric blue
+                    float glow = smoothstep(0.08, 0.0, dist);
+                    vec3 glow_color = mix(vec3(0.05, 0.35, 0.65), vec3(0.015, 0.38, 0.72), u_dark);
                     color = mix(color, glow_color, glow * 0.25);
                     
                     // Moving floating ambient blobs
@@ -1082,8 +1082,8 @@
                     // Scale coordinates for grid density
                     vec2 gridUv = uv * u_resolution.xy / 20.0;
                     vec2 grid = fract(gridUv) - 0.5;
-                    // Dramatically enlarge dots on mouse hover
-                    float hoverGlow = smoothstep(0.24, 0.0, dist);
+                    // Enlarge dots tightly on mouse hover
+                    float hoverGlow = smoothstep(0.12, 0.0, dist);
                     float dotRadius = mix(0.06, 0.26, hoverGlow);
                     float dots = smoothstep(dotRadius, dotRadius - 0.04, length(grid));
                     
@@ -1095,8 +1095,8 @@
                     
                     vec3 dotColor = mix(lightDotGrad, darkDotGrad, u_dark);
                     
-                    // Glow effect on dots near the mouse cursor (enlighten to bright electric blue)
-                    dotColor = mix(dotColor, vec3(0.0, 0.70, 1.0), hoverGlow * 0.75);
+                    // Glow effect on dots near the mouse cursor (enlighten to bright blue)
+                    dotColor = mix(dotColor, vec3(0.0, 0.55, 0.95), hoverGlow * 0.75);
                     
                     // Original high-visibility dot opacity scale (boosted to 0.85 near cursor for glowing dot pop)
                     float dotOpacity = mix(0.32, 0.85, hoverGlow);
