@@ -287,9 +287,15 @@
             <div class="w-8 h-8 rounded-full overflow-hidden flex items-center justify-center bg-transparent">
                 <svg viewBox="0 0 285 285" xmlns="http://www.w3.org/2000/svg" class="w-full h-full">
                     <defs>
-                        <linearGradient id="logo-glimmer" x1="-100%" x2="0%" y1="0%" y2="100%">
-                            <animate attributeName="x1" dur="4s" repeatCount="indefinite" values="-100%; 100%"></animate>
-                            <animate attributeName="x2" dur="4s" repeatCount="indefinite" values="0%; 200%"></animate>
+                        <linearGradient id="logo-glimmer" x1="0%" y1="0%" x2="100%" y2="100%">
+                            <animateTransform 
+                                attributeName="gradientTransform" 
+                                type="translate" 
+                                from="-1.5,-1.5" 
+                                to="1.5,1.5" 
+                                dur="4s" 
+                                repeatCount="indefinite">
+                            </animateTransform>
                             <stop offset="0%" stop-color="rgba(255,255,255,0)"></stop>
                             <stop offset="50%" stop-color="rgba(255,255,255,0.75)"></stop>
                             <stop offset="100%" stop-color="rgba(255,255,255,0)"></stop>
@@ -298,13 +304,13 @@
                             <path
                                 d="m949.5 548.9c0-.2 0-.2 0 0l-948.2-548h-.2v326.5c0 76 41.7 142.2 103.2 177.3v0l948.2 547.8h.2v-326.6c-.1-75.9-41.6-142-103.2-177z"
                                 fill="white" transform="matrix(.25181468 0 0 .25181468 1.7230039 1.7733668)"></path>
-                            <path d="m102.8 724.9c.2 0 .2 0 0 0-55.4-31.8-94.4-88.4-101.7-154.9v482.2l334.4-193z"
-                                fill="white" transform="matrix(.25181468 0 0 .25181468 1.7230039 1.7733668)">
+                            <path
+                                d="m102.8 724.9c.2 0 .2 0 0 0-55.4-31.8-94.4-88.4-101.7-154.9v482.2l334.4-193z"
+                                fill="white" transform="matrix(.25181468 0 0 .25181468 1.7230039 1.7733668)"></path>
+                            <path
+                                d="m951.1 328.6c0 0-.2 0 0 0 55.4 31.8 94.4 88.4 101.7 154.8v-482.3l-334.4 193z"
+                                fill="white" transform="matrix(.25181468 0 0 .25181468 1.7230039 1.7733668)"></path>
                         </mask>
-                        <path d="m951.1 328.6c0 0-.2 0 0 0 55.4 31.8 94.4 88.4 101.7 154.8v-482.3l-334.4 193z"
-                            fill="white" transform="matrix(.25181468 0 0 .25181468 1.7230039 1.7733668)">
-                            </mask>
-                            </mask>
                     </defs>
                     <g transform="matrix(.25181468 0 0 .25181468 1.7230039 1.7733668)">
                         <path
@@ -438,9 +444,15 @@
                     <div class="w-16 h-16 flex items-center justify-center animate-bounce bg-transparent">
                         <svg viewBox="0 0 285 285" xmlns="http://www.w3.org/2000/svg" class="w-full h-full">
                             <defs>
-                                <linearGradient id="welcome-logo-glimmer" x1="-100%" x2="0%" y1="0%" y2="100%">
-                                    <animate attributeName="x1" dur="4s" repeatCount="indefinite" values="-100%; 100%"></animate>
-                                    <animate attributeName="x2" dur="4s" repeatCount="indefinite" values="0%; 200%"></animate>
+                                <linearGradient id="welcome-logo-glimmer" x1="0%" y1="0%" x2="100%" y2="100%">
+                                    <animateTransform 
+                                        attributeName="gradientTransform" 
+                                        type="translate" 
+                                        from="-1.5,-1.5" 
+                                        to="1.5,1.5" 
+                                        dur="4s" 
+                                        repeatCount="indefinite">
+                                    </animateTransform>
                                     <stop offset="0%" stop-color="rgba(255,255,255,0)"></stop>
                                     <stop offset="50%" stop-color="rgba(255,255,255,0.75)"></stop>
                                     <stop offset="100%" stop-color="rgba(255,255,255,0)"></stop>
