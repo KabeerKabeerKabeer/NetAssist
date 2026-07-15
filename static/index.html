@@ -682,6 +682,57 @@
             }
         }
 
+        const isStreamlit = window.self !== window.top;
+
+        function sendToStreamlit(value) {
+            window.parent.postMessage({
+                isStreamlitMessage: true,
+                type: "streamlit:setComponentValue",
+                value: value
+            }, "*");
+        }
+
+        function setStreamlitFrameHeight() {
+            if (isStreamlit) {
+                window.parent.postMessage({
+                    isStreamlitMessage: true,
+                    type: "streamlit:setFrameHeight",
+                    value: window.innerHeight
+                }, "*");
+            }
+        }
+        
+        if (isStreamlit) {
+            window.addEventListener("resize", setStreamlitFrameHeight);
+            setInterval(setStreamlitFrameHeight, 500);
+
+            let lastProcessedTimestamp = 0;
+            window.addEventListener("message", (event) => {
+                const msg = event.data;
+                if (msg.type === "streamlit:render") {
+                    const args = msg.args;
+                    const timestamp = args.lastTimestamp || 0;
+                    
+                    if (timestamp > lastProcessedTimestamp) {
+                        lastProcessedTimestamp = timestamp;
+                        
+                        // Remove Thinking State
+                        removeThinkingState();
+                        
+                        // Add response to DOM
+                        addMessageToDom('assistant', args.lastResponse, {
+                            intent: args.lastIntent,
+                            retryCount: 0
+                        });
+                        
+                        // Save assistant answer in history
+                        conversationHistory.push({ role: "assistant", content: args.lastResponse });
+                        saveCurrentSession();
+                    }
+                }
+            });
+        }
+
         // Core Send Message Logic
         async function sendMessage() {
             const query = chatInput.value.trim();
@@ -708,6 +759,35 @@
             
             // Show thinking state
             showThinkingState();
+
+            if (isStreamlit) {
+                if (fileToUpload) {
+                    const reader = new FileReader();
+                    reader.onload = function(e) {
+                        const arrayBuffer = e.target.result;
+                        const bytes = new Uint8Array(arrayBuffer);
+                        let binary = '';
+                        for (let i = 0; i < bytes.byteLength; i++) {
+                            binary += String.fromCharCode(bytes[i]);
+                        }
+                        const base64String = btoa(binary);
+                        
+                        sendToStreamlit({
+                            query: query,
+                            fileBase64: base64String,
+                            fileName: fileToUpload.name,
+                            timestamp: Date.now()
+                        });
+                    };
+                    reader.readAsArrayBuffer(fileToUpload);
+                } else {
+                    sendToStreamlit({
+                        query: query,
+                        timestamp: Date.now()
+                    });
+                }
+                return;
+            }
 
             // Structure request parameters
             try {

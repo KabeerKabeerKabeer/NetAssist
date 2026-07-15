@@ -1,10 +1,11 @@
 import streamlit as st
-import asyncio
+import streamlit.components.v1 as components
 import os
-import json
+import asyncio
+import base64
 from dotenv import load_dotenv
 
-# Load environmental variables
+# Load environment variables
 load_dotenv()
 
 # Import core structures
@@ -12,7 +13,6 @@ from agent.graph import chatbotApp
 from agent.state import ChatbotState
 from utils.fileExtractor import extractTextFromFile
 
-# Mock UploadFile class for FastAPI helper compatibility
 class StreamlitFileMock:
     def __init__(self, filename):
         self.filename = filename
@@ -21,98 +21,79 @@ class StreamlitFileMock:
 st.set_page_config(
     page_title="NetAssist | Netsol Hybrid RAG",
     page_icon="🤖",
-    layout="centered"
+    layout="wide"  # Keep it wide for custom layout embedding
 )
 
-# Custom Styling (matching our beautiful SOTA dark/light themes)
+# Custom CSS to hide Streamlit header and footer, making the iframe go 100% full screen
 st.markdown("""
 <style>
-    /* Styling headers & text */
-    h1 {
-        font-family: 'Hanken Grotesk', sans-serif !important;
-        background: linear-gradient(45deg, #005c98, #1B75BB);
-        -webkit-background-clip: text;
-        -webkit-text-fill-color: transparent;
-        font-weight: 800 !important;
+    /* Hide top header, sidebar background and footer */
+    header {visibility: hidden;}
+    .main .block-container {
+        padding-top: 0rem !important;
+        padding-bottom: 0rem !important;
+        padding-left: 0rem !important;
+        padding-right: 0rem !important;
     }
-    .stChatInputContainer {
-        border-radius: 1rem !important;
+    iframe {
+        border: none !important;
+        width: 100% !important;
+        height: 100vh !important;
+        overflow: hidden !important;
     }
-    div.stChatMessage {
-        border-radius: 1rem !important;
-        box-shadow: 0 4px 12px rgba(0,0,0,0.02);
-    }
+    #MainMenu {visibility: hidden;}
+    footer {visibility: hidden;}
 </style>
 """, unsafe_allow_html=True)
 
-st.title("NetAssist")
-st.caption("Netsol Hybrid Intelligence OS — SQL & Vector RAG Pipeline")
+# Declare component pointing to the static directory
+parent_dir = os.path.dirname(os.path.abspath(__file__))
+build_dir = os.path.join(parent_dir, "static")
+netassist_component = components.declare_component("netassist_component", path=build_dir)
 
-# Initialize Chat Sessions
-if "messages" not in st.session_state:
-    st.session_state.messages = []
+# Initialize session state for tracking responses
+if "lastResponse" not in st.session_state:
+    st.session_state.lastResponse = ""
+if "lastIntent" not in st.session_state:
+    st.session_state.lastIntent = ""
+if "lastTimestamp" not in st.session_state:
+    st.session_state.lastTimestamp = 0
+if "processedTimestamp" not in st.session_state:
+    st.session_state.processedTimestamp = 0
+if "chatHistory" not in st.session_state:
+    st.session_state.chatHistory = []
 
-# Sidebar for file upload and parameters
-with st.sidebar:
-    st.header("Attachment Node")
-    uploaded_file = st.file_uploader(
-        "Upload document (.pdf, .docx, .doc, .txt, .md)", 
-        type=["pdf", "docx", "doc", "txt", "md"]
-    )
-    
-    st.divider()
-    st.markdown("### System Specifications")
-    st.markdown("""
-    - **Context Limit:** 8,192 tokens
-    - **RAG Architecture:** Hybrid (SQL / ChromaDB Vector)
-    - **Backend Engine:** LangGraph State Machine
-    """)
-    
-    # Add a Clear Chat button
-    if st.button("Clear Chat History", type="secondary"):
-        st.session_state.messages = []
-        st.rerun()
+# Call component and pass the current state
+component_value = netassist_component(
+    lastResponse=st.session_state.lastResponse,
+    lastIntent=st.session_state.lastIntent,
+    lastTimestamp=st.session_state.lastTimestamp,
+    key="netassist_ui"
+)
 
-# Display chat messages from session state
-for msg in st.session_state.messages:
-    with st.chat_message(msg["role"]):
-        st.markdown(msg["content"])
-        if "intent" in msg:
-            st.caption(f"Intent detected: **{msg['intent']}**")
-
-# Chat input
-if user_query := st.chat_input("Query the neural index..."):
-    # Render user query
-    with st.chat_message("user"):
-        st.markdown(user_query)
+# Check if new message payload was sent from the iframe
+if component_value and component_value.get("timestamp", 0) > st.session_state.processedTimestamp:
+    query = component_value["query"]
+    timestamp = component_value["timestamp"]
     
-    # Save user query to history
-    st.session_state.messages.append({"role": "user", "content": user_query})
-    
-    # Extract file text if file attached
+    # Process attached file text if present
     file_text = ""
-    if uploaded_file is not None:
+    if "fileBase64" in component_value:
         try:
-            content_bytes = uploaded_file.getvalue()
-            file_mock = StreamlitFileMock(uploaded_file.name)
-            file_text = extractTextFromFile(file_mock, content_bytes)
-            st.info(f"Attached: **{uploaded_file.name}** ({len(file_text)} characters extracted)")
+            file_bytes = base64.b64decode(component_value["fileBase64"])
+            file_mock = StreamlitFileMock(component_value["fileName"])
+            file_text = extractTextFromFile(file_mock, file_bytes)
         except Exception as file_err:
-            st.error(f"Failed to parse uploaded file: {str(file_err)}")
-            st.stop()
-            
+            st.session_state.lastResponse = f"Failed to parse uploaded file: {str(file_err)}"
+            st.session_state.lastIntent = "ERROR"
+            st.session_state.lastTimestamp = timestamp
+            st.session_state.processedTimestamp = timestamp
+            st.rerun()
+
     # Structure state payload
-    history_payload = []
-    # Build history list in required structure: [{"role": "user"|"assistant", "content": "..."}]
-    for m in st.session_state.messages[:-1]: # exclude current message
-        history_payload.append({
-            "role": m["role"],
-            "content": m["content"]
-        })
-        
     initialState = ChatbotState(
-        userQuery=user_query,
-        chatHistory=history_payload,
+        userQuery=query,
+        chatHistory=st.session_state.chatHistory,
         fileContext=file_text,
         queryIntent="",
         extractedEntities=[],
@@ -124,25 +105,24 @@ if user_query := st.chat_input("Query the neural index..."):
         finalResponse=""
     )
     
-    # Invoke LangGraph agent with loading indicator
-    with st.spinner("Neural agent thinking..."):
-        try:
-            # Run the async invoker in an event loop
-            finalState = asyncio.run(chatbotApp.ainvoke(initialState))
-            response = finalState.get("finalResponse", "I am unable to answer that at the moment.")
-            intent = finalState.get("queryIntent", "UNKNOWN")
-            
-            # Display response
-            with st.chat_message("assistant"):
-                st.markdown(response)
-                st.caption(f"Intent detected: **{intent}**")
-                
-            # Save assistant response to history
-            st.session_state.messages.append({
-                "role": "assistant", 
-                "content": response,
-                "intent": intent
-            })
-            
-        except Exception as e:
-            st.error(f"Error processing response: {str(e)}")
+    try:
+        # Run the async invoker in an event loop
+        finalState = asyncio.run(chatbotApp.ainvoke(initialState))
+        response = finalState.get("finalResponse", "I am unable to answer that at the moment.")
+        intent = finalState.get("queryIntent", "UNKNOWN")
+    except Exception as e:
+        response = f"Error processing query: {str(e)}"
+        intent = "ERROR"
+        
+    # Update state
+    st.session_state.lastResponse = response
+    st.session_state.lastIntent = intent
+    st.session_state.lastTimestamp = timestamp
+    st.session_state.processedTimestamp = timestamp
+    
+    # Update history list
+    st.session_state.chatHistory.append({"role": "user", "content": query})
+    st.session_state.chatHistory.append({"role": "assistant", "content": response})
+    
+    # Rerun to push the new response arguments to the iframe!
+    st.rerun()
