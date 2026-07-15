@@ -1033,13 +1033,17 @@
                     
                     // Smooth moving gradients
                     float bg_light = 0.95 + 0.05 * sin(uv.x * 2.0 + u_time * 0.4);
-                    
-                    // Very subtle radial blue-black gradient for depth in dark mode
                     float dGlow = distance(uv, vec2(0.25, 0.65));
+                    
+                    // Subtle radial sky-blue to off-white gradient for clean light mode depth
+                    vec3 lightBg = mix(vec3(0.88, 0.93, 0.97), vec3(0.97, 0.98, 0.99), smoothstep(0.1, 0.9, dGlow));
+                    lightBg += (bg_light - 0.95) * 0.35; // Add subtle organic motion
+                    
+                    // Subtle radial blue-black gradient for dark mode depth
                     vec3 darkBg = mix(vec3(0.012, 0.042, 0.092), vec3(0.003, 0.005, 0.012), smoothstep(0.1, 0.9, dGlow));
                     
                     // Mix light background color with dark gradient background based on theme mode
-                    vec3 color = mix(vec3(bg_light), darkBg, u_dark);
+                    vec3 color = mix(lightBg, darkBg, u_dark);
                     
                     // Soft glow following cursor
                     float dist = distance(uv, mouse);
