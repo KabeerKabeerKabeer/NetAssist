@@ -61,11 +61,50 @@ class PlaywrightBrowser:
                     self.page.evaluate("window.scrollBy(0, 800)")
                     self.page.wait_for_timeout(350)
                 
+                # Active Expansion Trigger: click all accordions, tabs, read-mores, and toggles
+                self.page.evaluate("""() => {
+                    // 1. Expand elements with aria-expanded="false"
+                    document.querySelectorAll('[aria-expanded="false"]').forEach(el => {
+                        try { el.click(); } catch(e) {}
+                    });
+
+                    // 2. Click tab buttons that are not currently active
+                    document.querySelectorAll('[role="tab"][aria-selected="false"]').forEach(el => {
+                        try { el.click(); } catch(e) {}
+                    });
+
+                    // 3. Click custom accordion trigger elements
+                    const accordionTriggers = document.querySelectorAll(
+                        '.accordion-title, .accordion-header, .accordion-toggle, [class*="accordion"] button, [class*="accordion"] [role="button"]'
+                    );
+                    accordionTriggers.forEach(el => {
+                        try { el.click(); } catch(e) {}
+                    });
+
+                    // 4. Click in-page toggle links or buttons like "Read More" or "View Profile"
+                    const textToggles = document.querySelectorAll('button, div[role="button"], span, a');
+                    const toggleTexts = ["read more", "view profile", "view details", "expand", "show more"];
+                    
+                    textToggles.forEach(el => {
+                        const text = el.innerText ? el.innerText.toLowerCase().trim() : '';
+                        if (toggleTexts.some(keyword => text.includes(keyword))) {
+                            if (el.tagName.toLowerCase() === 'a') {
+                                const href = el.getAttribute('href');
+                                if (href && !href.startsWith('#') && !href.startsWith('javascript:')) {
+                                    return; // Skip page transition links
+                                }
+                            }
+                            try { el.click(); } catch(e) {}
+                        }
+                    });
+                }""")
+                self.page.wait_for_timeout(800) # Wait for expansion transitions/animations to finish
+
                 # Scroll back to top to ensure complete DOM state layout is finalized
                 self.page.evaluate("window.scrollTo(0, 0)")
                 self.page.wait_for_timeout(400)
             except Exception as scroll_err:
-                print(f"  [WARNING] Scroll execution failed on {url}: {scroll_err}")
+                print(f"  [WARNING] Scroll/Expansion execution failed on {url}: {scroll_err}")
                 
             html_content = self.page.content()
             page_title = self.page.title().strip() if self.page.title() else "No Title"
