@@ -11,27 +11,16 @@ apiKey = os.getenv("GEMINI_API_KEY")
 if not apiKey:
     raise ValueError("GEMINI_API_KEY is missing from the environment configuration.")
 
-# 1. Initialize Gemini Models
-# Flash-Lite handles routing, mapping, and low-complexity tasks (15 RPM)
-# Fallback to standard flash to avoid quota limit issues
-geminiFlashLite = ChatGoogleGenerativeAI(
-    model="gemini-2.5-flash",
-    google_api_key=apiKey,
-    temperature=0.1
-)
+# 1. Dynamic proxy wrappers to prevent thread/loop binding issues in gRPC (important for Streamlit)
+class EmbeddingEngineProxy:
+    def embed_query(self, textContent):
+        engine = GoogleGenerativeAIEmbeddings(
+            model="models/gemini-embedding-001",
+            google_api_key=apiKey
+        )
+        return engine.embed_query(textContent)
 
-# Standard Flash handles SQL generation and final answer synthesis (10 RPM)
-geminiFlash = ChatGoogleGenerativeAI(
-    model="gemini-2.5-flash",
-    google_api_key=apiKey,
-    temperature=0.3
-)
-
-# Text Embedding engine for website syncing and vector searches
-embeddingEngine = GoogleGenerativeAIEmbeddings(
-    model="models/gemini-embedding-001",
-    google_api_key=apiKey
-)
+embeddingEngine = EmbeddingEngineProxy()
 
 # 1.5. Pricing Models and Cost Calculation
 PRICING = {
@@ -116,8 +105,9 @@ async def generateEmbeddingArray(textContent):
     
     try:
         modelName = "models/gemini-embedding-001"
-        # GoogleGenerativeAIEmbeddings has no get_num_tokens, use geminiFlashLite to count prompt tokens
-        promptTokens = geminiFlashLite.get_num_tokens(textContent)
+        # GoogleGenerativeAIEmbeddings has no get_num_tokens, use dynamic geminiFlashLite to count prompt tokens
+        flashLite = ChatGoogleGenerativeAI(model="gemini-2.5-flash", google_api_key=apiKey, temperature=0.1)
+        promptTokens = flashLite.get_num_tokens(textContent)
         responseTokens = 0
         estimatedCost = calculateCost(modelName, promptTokens, responseTokens)
         
@@ -132,16 +122,22 @@ async def invokeFlashLite(promptPayload):
     """
     Asynchronously invokes the high-speed Flash-Lite model with retry safety.
     """
+    flashLite = ChatGoogleGenerativeAI(
+        model="gemini-2.5-flash",
+        google_api_key=apiKey,
+        temperature=0.1
+    )
+    
     async def flashLiteTask():
-        return await geminiFlashLite.ainvoke(promptPayload)
+        return await flashLite.ainvoke(promptPayload)
         
     response = await executeWithRetry(flashLiteTask)
     
     try:
         modelName = "gemini-2.5-flash"
         promptStr = str(promptPayload)
-        promptTokens = geminiFlashLite.get_num_tokens(promptStr)
-        responseTokens = geminiFlashLite.get_num_tokens(response.content)
+        promptTokens = flashLite.get_num_tokens(promptStr)
+        responseTokens = flashLite.get_num_tokens(response.content)
         estimatedCost = calculateCost(modelName, promptTokens, responseTokens)
         
         from core.database import logLLMUsage
@@ -155,16 +151,22 @@ async def invokeFlash(promptPayload):
     """
     Asynchronously invokes the high-reasoning Flash model with retry safety.
     """
+    flash = ChatGoogleGenerativeAI(
+        model="gemini-2.5-flash",
+        google_api_key=apiKey,
+        temperature=0.3
+    )
+    
     async def flashTask():
-        return await geminiFlash.ainvoke(promptPayload)
+        return await flash.ainvoke(promptPayload)
         
     response = await executeWithRetry(flashTask)
     
     try:
         modelName = "gemini-2.5-flash"
         promptStr = str(promptPayload)
-        promptTokens = geminiFlash.get_num_tokens(promptStr)
-        responseTokens = geminiFlash.get_num_tokens(response.content)
+        promptTokens = flash.get_num_tokens(promptStr)
+        responseTokens = flash.get_num_tokens(response.content)
         estimatedCost = calculateCost(modelName, promptTokens, responseTokens)
         
         from core.database import logLLMUsage
