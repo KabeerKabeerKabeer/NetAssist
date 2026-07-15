@@ -22,9 +22,19 @@ async def routeQueryNode(stateData: ChatbotState) -> Dict[str, Any]:
         return {"queryIntent": "FILE", "userQuery": userQuery}
         
     # Check for simple greetings or chatbot meta-questions directly in Python for deterministic speed & accuracy
+    import re
     clean_query = userQuery.lower().strip().replace("?", "").replace("!", "")
-    meta_keywords = ["who are you", "what can you do", "what do you do", "your name", "introduce yourself", "how can you help", "hi", "hello", "hey"]
-    if any(k in clean_query for k in meta_keywords):
+    
+    # Meta phrases (substring matching is fine for multi-word phrases)
+    meta_phrases = ["who are you", "what can you do", "what do you do", "your name", "introduce yourself", "how can you help"]
+    is_meta = any(phrase in clean_query for phrase in meta_phrases)
+    
+    # Standalone greetings (must match as full words to avoid matching "highest", "history", "behind")
+    greetings = ["hi", "hello", "hey"]
+    words = re.findall(r'\b\w+\b', clean_query)
+    is_greeting = any(w in words for w in greetings)
+    
+    if is_meta or is_greeting:
         print("[ROUTER] Python-matched greeting/meta-query. Routing directly to VECTOR.")
         return {"queryIntent": "VECTOR", "userQuery": userQuery}
         
@@ -317,6 +327,7 @@ async def synthesizeResponseNode(stateData: ChatbotState) -> Dict[str, Any]:
     queryIntent = stateData.get("queryIntent")
     
     # 1. Catch assistant identity, capability, and greeting queries for custom answers
+    import re
     clean_query = userQuery.lower().strip().replace("?", "").replace("!", "")
     if any(q in clean_query for q in ["who are you", "your name", "introduce yourself"]):
         return {"finalResponse": "I am **NetAssist**! 🤖 Created specifically to help you with all your NETSOL Technologies questions, database queries, and document analysis."}
@@ -331,7 +342,8 @@ async def synthesizeResponseNode(stateData: ChatbotState) -> Dict[str, Any]:
             )
         }
         
-    if any(q in clean_query for q in ["hi", "hello", "hey"]):
+    words = re.findall(r'\b\w+\b', clean_query)
+    if any(q in words for q in ["hi", "hello", "hey"]):
         return {"finalResponse": "Hello! I am **NetAssist**! 🤖 How can I help you today?"}
     
     if queryIntent == "OUT_OF_DOMAIN":
