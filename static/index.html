@@ -1042,9 +1042,9 @@
                     vec2 uv = v_texCoord;
                     vec2 mouse = u_mouse / u_resolution;
                     
-                    // Diagonal periodic gradient pattern with sharp ripple crests and faster flow speed
+                    // Diagonal periodic gradient pattern with sharp ripple crests and slower flow speed
                     float diag = uv.x + uv.y;
-                    float rawWave = sin(diag * 12.0 - u_time * 1.8) * 0.5 + 0.5;
+                    float rawWave = sin(diag * 12.0 - u_time * 0.9) * 0.5 + 0.5;
                     float wavePattern = pow(rawWave, 4.0);
                     
                     // Smooth moving gradients
@@ -1082,7 +1082,8 @@
                     // Scale coordinates for grid density
                     vec2 gridUv = uv * u_resolution.xy / 20.0;
                     vec2 grid = fract(gridUv) - 0.5;
-                    float dotRadius = mix(0.08, 0.22, smoothstep(0.20, 0.0, dist));
+                    // Dramatically enlarge dots on mouse hover
+                    float dotRadius = mix(0.06, 0.26, smoothstep(0.24, 0.0, dist));
                     float dots = smoothstep(dotRadius, dotRadius - 0.04, length(grid));
                     
                     // Light mode: Slate-blue to soft primary blue diagonal wave
