@@ -87,12 +87,15 @@ def queryVectorDatabase(queryVector, topK=4):
     # Chroma returns lists of lists, we flatten this for the LangGraph context
     extractedContext = []
     
-    if searchResults['documents'] and searchResults['documents'][0]:
+    if searchResults.get('documents') and searchResults['documents'][0]:
         documents = searchResults['documents'][0]
-        metadatas = searchResults['metadatas'][0]
+        # Safely handle potential None or empty metadatas from Chroma
+        metadatas = searchResults.get('metadatas', [[]])[0] if searchResults.get('metadatas') else []
         
         for index in range(len(documents)):
-            sourceUrl = metadatas[index].get("source", "Unknown Source")
+            sourceUrl = "Unknown Source"
+            if metadatas and index < len(metadatas) and metadatas[index]:
+                sourceUrl = metadatas[index].get("source", "Unknown Source")
             text = documents[index]
             extractedContext.append(f"[Source: {sourceUrl}]\n{text}")
             

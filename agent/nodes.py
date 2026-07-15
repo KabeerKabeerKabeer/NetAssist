@@ -20,6 +20,14 @@ async def routeQueryNode(stateData: ChatbotState) -> Dict[str, Any]:
     if fileContext:
         print("[ROUTER] File context detected. Bypassing database routing.")
         return {"queryIntent": "FILE", "userQuery": userQuery}
+        
+    # Check for simple greetings or chatbot meta-questions directly in Python for deterministic speed & accuracy
+    clean_query = userQuery.lower().strip().replace("?", "").replace("!", "")
+    meta_keywords = ["who are you", "what can you do", "what do you do", "your name", "introduce yourself", "how can you help", "hi", "hello", "hey"]
+    if any(k in clean_query for k in meta_keywords):
+        print("[ROUTER] Python-matched greeting/meta-query. Routing directly to VECTOR.")
+        return {"queryIntent": "VECTOR", "userQuery": userQuery}
+        
     chatHistory = stateData.get("chatHistory", [])
     
     contextualizedQuery = userQuery
@@ -308,12 +316,12 @@ async def synthesizeResponseNode(stateData: ChatbotState) -> Dict[str, Any]:
     userQuery = stateData.get("userQuery")
     queryIntent = stateData.get("queryIntent")
     
-    # 1. Catch assistant identity/capability queries for playful custom answers
-    lowerQuery = userQuery.lower().strip()
-    if any(q in lowerQuery for q in ["who are you", "your name", "introduce yourself"]):
+    # 1. Catch assistant identity, capability, and greeting queries for custom answers
+    clean_query = userQuery.lower().strip().replace("?", "").replace("!", "")
+    if any(q in clean_query for q in ["who are you", "your name", "introduce yourself"]):
         return {"finalResponse": "I am **NetAssist**! 🤖 Created specifically to help you with all your NETSOL Technologies questions, database queries, and document analysis."}
     
-    if any(q in lowerQuery for q in ["what can you do", "what do you do", "how can you help", "your capabilities"]):
+    if any(q in clean_query for q in ["what can you do", "what do you do", "how can you help", "your capabilities"]):
         return {
             "finalResponse": (
                 "I can answer all your NETSOL queries! Here is how I can help:\n\n"
@@ -322,6 +330,9 @@ async def synthesizeResponseNode(stateData: ChatbotState) -> Dict[str, Any]:
                 "*   **Document Analysis (File RAG):** Upload files (.pdf, .docx, .doc, .txt, .md) to search and analyze their contents instantly."
             )
         }
+        
+    if any(q in clean_query for q in ["hi", "hello", "hey"]):
+        return {"finalResponse": "Hello! I am **NetAssist**! 🤖 How can I help you today?"}
     
     if queryIntent == "OUT_OF_DOMAIN":
         return {"finalResponse": "I apologize, but I am specifically designed to assist with Netsol Technologies' enterprise services and internal employee data. I cannot answer queries outside of this domain."}
