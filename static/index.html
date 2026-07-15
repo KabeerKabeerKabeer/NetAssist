@@ -1079,12 +1079,15 @@
                     float dotRadius = mix(0.08, 0.22, smoothstep(0.20, 0.0, dist));
                     float dots = smoothstep(dotRadius, dotRadius - 0.04, length(grid));
                     
-                    // Gradient dot color based on vertical position (uv.y) and theme
-                    // Light mode: Muted slate-blue (bottom) to soft primary blue (top)
-                    vec3 lightDotGrad = mix(vec3(0.68, 0.72, 0.78), vec3(0.35, 0.55, 0.75), uv.y);
+                    // Diagonal periodic gradient pattern for dot colors (multiple light/dark bands)
+                    float diag = uv.x + uv.y;
+                    float wavePattern = sin(diag * 7.5) * 0.5 + 0.5;
                     
-                    // Dark mode: Deep subtle navy (bottom) to electric cyan-blue (top)
-                    vec3 darkDotGrad = mix(vec3(0.04, 0.16, 0.32), vec3(0.0, 0.45, 0.75), uv.y);
+                    // Light mode: Slate-blue to soft primary blue diagonal wave
+                    vec3 lightDotGrad = mix(vec3(0.70, 0.74, 0.80), vec3(0.38, 0.58, 0.78), wavePattern);
+                    
+                    // Dark mode: Deep subtle navy to electric cyan-blue diagonal wave
+                    vec3 darkDotGrad = mix(vec3(0.04, 0.16, 0.32), vec3(0.0, 0.48, 0.80), wavePattern);
                     
                     vec3 dotColor = mix(lightDotGrad, darkDotGrad, u_dark);
                     
