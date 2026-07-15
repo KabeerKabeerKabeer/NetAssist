@@ -32,25 +32,39 @@ st.markdown("""
     #MainMenu {visibility: hidden;}
     footer {visibility: hidden;}
     
-    /* Remove padding/margin on main wrapper */
-    .main .block-container {
+    /* Aggressive reset on all Streamlit page layout containers */
+    [data-testid="stAppViewContainer"],
+    [data-testid="stMain"],
+    .main,
+    .block-container {
         padding: 0px !important;
         margin: 0px !important;
-        max-width: 100vw !important;
-        width: 100vw !important;
-        height: 100vh !important;
+        width: 100% !important;
+        height: 100% !important;
+        max-width: 100% !important;
+        overflow: hidden !important;
     }
     
-    /* Stretch custom component container to full viewport width/height */
-    div[data-testid="stVerticalBlock"] > div {
+    /* Remove gap spacings between Streamlit elements */
+    [data-testid="stVerticalBlock"],
+    [data-testid="stVerticalBlock"] > div {
         padding: 0px !important;
         margin: 0px !important;
+        gap: 0px !important;
     }
     
-    /* Force component iframe to take up the full screen */
+    /* Ensure component containers take full width and height */
+    .element-container, .stCustomComponent {
+        width: 100% !important;
+        height: 100% !important;
+        margin: 0px !important;
+        padding: 0px !important;
+    }
+    
+    /* Force component iframe to take up the full viewport */
     iframe {
         border: none !important;
-        width: 100vw !important;
+        width: 100% !important;
         height: 100vh !important;
         display: block !important;
         margin: 0px !important;
