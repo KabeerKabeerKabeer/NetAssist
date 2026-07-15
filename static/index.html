@@ -1062,11 +1062,11 @@
                     // Mix light background color with dark gradient background based on theme mode
                     vec3 color = mix(lightBg, darkBg, u_dark);
                     
-                    // Soft glow following cursor (reduced area of effect)
+                    // Soft glow following cursor (tight area of effect, intense electric blue)
                     float dist = distance(uv, mouse);
-                    float glow = smoothstep(0.22, 0.0, dist);
-                    vec3 glow_color = mix(vec3(0.1, 0.46, 0.73), vec3(0.04, 0.6, 0.85), u_dark);
-                    color = mix(color, glow_color, glow * 0.14);
+                    float glow = smoothstep(0.15, 0.0, dist);
+                    vec3 glow_color = vec3(0.0, 0.55, 1.0); // Intense electric blue
+                    color = mix(color, glow_color, glow * 0.25);
                     
                     // Moving floating ambient blobs
                     for(int i = 0; i < 3; i++) {
@@ -1083,7 +1083,8 @@
                     vec2 gridUv = uv * u_resolution.xy / 20.0;
                     vec2 grid = fract(gridUv) - 0.5;
                     // Dramatically enlarge dots on mouse hover
-                    float dotRadius = mix(0.06, 0.26, smoothstep(0.24, 0.0, dist));
+                    float hoverGlow = smoothstep(0.24, 0.0, dist);
+                    float dotRadius = mix(0.06, 0.26, hoverGlow);
                     float dots = smoothstep(dotRadius, dotRadius - 0.04, length(grid));
                     
                     // Light mode: Slate-blue to soft primary blue diagonal wave
@@ -1094,8 +1095,11 @@
                     
                     vec3 dotColor = mix(lightDotGrad, darkDotGrad, u_dark);
                     
-                    // Original high-visibility dot opacity scale
-                    float dotOpacity = mix(0.32, 0.60, smoothstep(0.20, 0.0, dist));
+                    // Glow effect on dots near the mouse cursor (enlighten to bright electric blue)
+                    dotColor = mix(dotColor, vec3(0.0, 0.70, 1.0), hoverGlow * 0.75);
+                    
+                    // Original high-visibility dot opacity scale (boosted to 0.85 near cursor for glowing dot pop)
+                    float dotOpacity = mix(0.32, 0.85, hoverGlow);
                     color = mix(color, dotColor, dots * dotOpacity);
                     
                     // Dither noise
