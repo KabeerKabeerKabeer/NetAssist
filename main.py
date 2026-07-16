@@ -27,6 +27,12 @@ async def appLifespan(fastapiApp: FastAPI):
         print("Empty database detected. Ingesting core JSON data...")
         ingestEmployeeData(settings.employeeJsonPath)
     
+    print("Generating Pipeline Graph Architecture...")
+    try:
+        import generate_graph_data
+    except Exception as e:
+        print(f"Warning: Pipeline graph auto-generation failed: {e}")
+
     print("Starting Background Task Scheduler...")
     taskScheduler = AsyncIOScheduler()
     

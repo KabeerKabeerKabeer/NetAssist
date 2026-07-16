@@ -346,6 +346,11 @@
                 <span class="material-symbols-outlined dark:hidden">dark_mode</span>
                 <span class="material-symbols-outlined hidden dark:inline-block">light_mode</span>
             </button>
+            <button onclick="openPipelineModal()"
+                class="p-2 rounded-full text-slate-500 hover:text-vibrant-blue hover:bg-slate-100 dark:text-slate-400 dark:hover:text-primary-dark dark:hover:bg-slate-800/50 transition-all active:scale-95 flex items-center justify-center"
+                title="View Pipeline Graph">
+                <span class="material-symbols-outlined">schema</span>
+            </button>
             <button onclick="toggleSidebar('history-sidebar')"
                 class="p-2 rounded-full text-slate-500 hover:text-vibrant-blue hover:bg-slate-100 dark:text-slate-400 dark:hover:text-primary-dark dark:hover:bg-slate-800/50 transition-all active:scale-95 flex items-center justify-center"
                 title="Chat History">
@@ -409,6 +414,15 @@
                 </div>
                 <p class="text-xs text-slate-400 leading-relaxed">Disabling the WebGL canvas can improve device battery
                     life and overall performance.</p>
+            </div>
+
+            <div class="space-y-3">
+                <h4 class="font-semibold text-sm text-slate-400 uppercase tracking-wider">Pipeline Architecture</h4>
+                <button onclick="openPipelineModal()"
+                    class="w-full py-2 px-4 rounded-lg bg-vibrant-blue text-white dark:bg-primary-dark dark:hover:bg-primary text-sm font-semibold transition-all active:scale-95 flex items-center justify-center gap-2 shadow-sm hover:shadow">
+                    <span class="material-symbols-outlined text-base">schema</span> View Pipeline Graph
+                </button>
+                <p class="text-xs text-slate-400 leading-relaxed">Visualize nodes, edges, routing, and self-correction loop of our LangGraph agentic workflow.</p>
             </div>
 
             <div class="space-y-3">
@@ -541,12 +555,76 @@
         </div>
     </main>
 
+    <!-- Pipeline Graph Modal (Glassmorphic, responsive, and closeable) -->
+    <div id="pipeline-modal" class="fixed inset-0 z-50 hidden flex items-center justify-center p-4">
+        <!-- Backdrop -->
+        <div class="absolute inset-0 bg-black/40 dark:bg-black/60 backdrop-blur-sm" onclick="closePipelineModal()"></div>
+        
+        <!-- Modal Content Container -->
+        <div class="relative w-full max-w-4xl max-h-[90vh] glass-panel rounded-3xl shadow-2xl flex flex-col overflow-hidden transition-all duration-300 border border-slate-200/50 dark:border-slate-800/80 p-5 md:p-6"
+             onclick="event.stopPropagation()">
+             
+            <!-- Header -->
+            <div class="flex justify-between items-center pb-4 border-b border-slate-200/50 dark:border-slate-800/50 flex-shrink-0">
+                <div class="flex items-center gap-2.5">
+                    <span class="material-symbols-outlined text-vibrant-blue dark:text-primary-dark text-2xl">schema</span>
+                    <div class="text-left">
+                        <h3 class="text-lg md:text-xl font-bold text-on-surface dark:text-on-surface-dark">LangGraph Pipeline Architecture</h3>
+                        <p class="text-xs text-slate-400">Live visualization of agent routing and SQL correction logic</p>
+                    </div>
+                </div>
+                <button onclick="closePipelineModal()"
+                    class="p-1.5 rounded-full hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 transition-colors">
+                    <span class="material-symbols-outlined">close</span>
+                </button>
+            </div>
+            
+            <!-- Graph Viewer Area -->
+            <div class="flex-1 overflow-auto py-6 flex items-center justify-center min-h-[350px] max-h-[60vh] bg-slate-900/10 dark:bg-slate-950/20 rounded-2xl border border-slate-200/20 dark:border-slate-800/20 relative" id="graph-container">
+                <div id="mermaid-renderer" class="mermaid w-full flex justify-center text-center">
+                    <!-- Mermaid markup will be injected and rendered here -->
+                </div>
+                <!-- Loading Spinner -->
+                <div id="graph-loader" class="absolute inset-0 flex items-center justify-center bg-slate-500/10 dark:bg-slate-950/40 backdrop-blur-xs">
+                    <div class="w-8 h-8 border-4 border-vibrant-blue border-t-transparent rounded-full animate-spin"></div>
+                </div>
+            </div>
+            
+            <!-- Explanatory Footnotes -->
+            <div class="pt-4 border-t border-slate-200/50 dark:border-slate-800/50 grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-3 text-center text-[10px] md:text-xs flex-shrink-0">
+                <div class="px-2 py-1.5 rounded bg-slate-100/50 dark:bg-indigo-950/20 border border-slate-200/55 dark:border-indigo-900/30 font-medium text-left">
+                    <div class="text-[9px] text-indigo-500 dark:text-indigo-400 font-semibold uppercase tracking-wider mb-0.5">Classification</div>
+                    <span class="text-slate-800 dark:text-slate-200">Intent Router</span>
+                </div>
+                <div class="px-2 py-1.5 rounded bg-slate-100/50 dark:bg-amber-950/20 border border-slate-200/55 dark:border-amber-900/30 font-medium text-left">
+                    <div class="text-[9px] text-amber-500 dark:text-amber-400 font-semibold uppercase tracking-wider mb-0.5">Semantic Mapping</div>
+                    <span class="text-slate-800 dark:text-slate-200">Semantic Mapper</span>
+                </div>
+                <div class="px-2 py-1.5 rounded bg-slate-100/50 dark:bg-cyan-950/20 border border-slate-200/55 dark:border-cyan-900/30 font-medium text-left">
+                    <div class="text-[9px] text-cyan-500 dark:text-cyan-400 font-semibold uppercase tracking-wider mb-0.5">Vector Search</div>
+                    <span class="text-slate-800 dark:text-slate-200">Vector Retriever</span>
+                </div>
+                <div class="px-2 py-1.5 rounded bg-slate-100/50 dark:bg-emerald-950/20 border border-slate-200/55 dark:border-emerald-900/30 font-medium text-left">
+                    <div class="text-[9px] text-emerald-500 dark:text-emerald-400 font-semibold uppercase tracking-wider mb-0.5">Structured Data</div>
+                    <span class="text-slate-800 dark:text-slate-200">SQL Engine</span>
+                </div>
+                <div class="px-2 py-1.5 rounded bg-slate-100/50 dark:bg-purple-950/20 border border-slate-200/55 dark:border-purple-900/30 font-medium text-left col-span-2 sm:col-span-2 md:col-span-2">
+                    <div class="text-[9px] text-purple-500 dark:text-purple-400 font-semibold uppercase tracking-wider mb-0.5">Final Synthesis</div>
+                    <span class="text-slate-800 dark:text-slate-200">Response Synthesizer</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <!-- UI Utility Dialogs -->
     <div id="toast"
         class="fixed bottom-24 left-1/2 -translate-x-1/2 z-50 px-4 py-2 bg-slate-900 text-white text-xs font-semibold rounded-full shadow-lg opacity-0 transition-opacity duration-300 pointer-events-none flex items-center gap-2">
         <span class="material-symbols-outlined text-sm" id="toast-icon">info</span>
         <span id="toast-text">Toast Message</span>
     </div>
+
+    <!-- Load Mermaid.js Library -->
+    <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
 
     <!-- Scripting Core -->
     <script>
@@ -694,6 +772,65 @@
             document.getElementById('history-sidebar').classList.add('translate-x-full');
             document.getElementById('settings-sidebar').classList.add('translate-x-full');
             sidebarBackdrop.classList.add('hidden');
+        }
+
+        // Pipeline Graph Modal Actions
+        let mermaidInitialized = false;
+
+        async function openPipelineModal() {
+            closeAllSidebars();
+
+            const modal = document.getElementById('pipeline-modal');
+            const loader = document.getElementById('graph-loader');
+            const renderer = document.getElementById('mermaid-renderer');
+            
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
+            loader.classList.remove('hidden');
+            
+            try {
+                if (!mermaidInitialized) {
+                    mermaid.initialize({
+                        startOnLoad: false,
+                        theme: document.documentElement.classList.contains('dark') ? 'dark' : 'default',
+                        securityLevel: 'loose',
+                        fontFamily: 'Hanken Grotesk, system-ui, sans-serif'
+                    });
+                    mermaidInitialized = true;
+                } else {
+                    // Update theme dynamically
+                    mermaid.initialize({
+                        theme: document.documentElement.classList.contains('dark') ? 'dark' : 'default'
+                    });
+                }
+                
+                const response = await fetch('pipeline_graph.json');
+                if (!response.ok) throw new Error("Failed to fetch graph data");
+                const data = await response.json();
+                
+                renderer.removeAttribute('data-processed');
+                renderer.textContent = data.mermaid;
+                
+                await mermaid.run({
+                    nodes: [renderer]
+                });
+            } catch (err) {
+                console.error("Mermaid Render Error:", err);
+                renderer.innerHTML = `
+                    <div class="text-sm text-red-500 py-8 flex flex-col items-center gap-2">
+                        <span class="material-symbols-outlined text-4xl">error</span>
+                        <span>Failed to render pipeline visualization.</span>
+                    </div>
+                `;
+            } finally {
+                loader.classList.add('hidden');
+            }
+        }
+
+        function closePipelineModal() {
+            const modal = document.getElementById('pipeline-modal');
+            modal.classList.add('hidden');
+            modal.classList.remove('flex');
         }
 
         // File Handler trigger
