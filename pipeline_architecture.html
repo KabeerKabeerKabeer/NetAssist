@@ -1,7 +1,55 @@
-import os
-import sys
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NetAssist - LangGraph Pipeline Architecture</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=JetBrains+Mono&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+    <style>
+        body {
+            font-family: 'Outfit', sans-serif;
+            background-color: #030712;
+            color: #f3f4f6;
+        }
+        pre.mermaid {
+            background: transparent !important;
+            border: none !important;
+        }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col p-4 md:p-8">
+    <div class="max-w-5xl w-full mx-auto flex-1 flex flex-col gap-6">
+        
+        <!-- Header -->
+        <header class="flex flex-col gap-1 border-b border-gray-800 pb-5">
+            <div class="flex items-center gap-3">
+                <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-blue-600 to-indigo-600 flex items-center justify-center text-white shadow-lg">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path>
+                    </svg>
+                </div>
+                <div>
+                    <h1 class="text-2xl font-bold tracking-tight bg-clip-text text-transparent bg-gradient-to-r from-blue-400 to-indigo-400">NetAssist Pipeline Architecture</h1>
+                    <p class="text-sm text-gray-400">Agentic workflow orchestration graph & routing conditions</p>
+                </div>
+            </div>
+        </header>
 
-mermaid_graph = """graph TD
+        <!-- Main Graph Section -->
+        <div class="flex-1 bg-gray-900/40 border border-gray-800/80 rounded-2xl p-6 flex flex-col gap-6 shadow-xl relative overflow-hidden backdrop-blur">
+            <div class="absolute inset-0 bg-gradient-to-tr from-blue-500/5 to-transparent pointer-events-none"></div>
+            
+            <div class="flex justify-between items-center text-xs text-gray-500 font-mono">
+                <span>FORMAT: MERMAID DIAGRAM</span>
+                <span>STATUS: COMPILED</span>
+            </div>
+
+            <!-- Graph Canvas -->
+            <div class="flex-grow flex items-center justify-center p-4 bg-gray-950/50 rounded-xl border border-gray-800/50 overflow-auto min-h-[450px]">
+                <pre class="mermaid w-full flex justify-center">
+graph TD
     %% Nodes
     __start__([Start])
     intentRouter[Intent Router<br/><i>Classifies Query & Sets Intent</i>]
@@ -46,60 +94,7 @@ mermaid_graph = """graph TD
     class sqlGenerator,sqlExecutor sql;
     class vectorRetriever vector;
     class responseSynthesizer synth;
-"""
 
-html_template = f"""<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>NetAssist - LangGraph Pipeline Architecture</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=JetBrains+Mono&display=swap" rel="stylesheet">
-    <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
-    <style>
-        body {{
-            font-family: 'Outfit', sans-serif;
-            background-color: #030712;
-            color: #f3f4f6;
-        }}
-        pre.mermaid {{
-            background: transparent !important;
-            border: none !important;
-        }}
-    </style>
-</head>
-<body class="min-h-screen flex flex-col p-4 md:p-8">
-    <div class="max-w-5xl w-full mx-auto flex-1 flex flex-col gap-6">
-        
-        <!-- Header -->
-        <header class="flex flex-col gap-1 border-b border-gray-800 pb-5">
-            <div class="flex items-center gap-3">
-                <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-blue-600 to-indigo-600 flex items-center justify-center text-white shadow-lg">
-                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path>
-                    </svg>
-                </div>
-                <div>
-                    <h1 class="text-2xl font-bold tracking-tight bg-clip-text text-transparent bg-gradient-to-r from-blue-400 to-indigo-400">NetAssist Pipeline Architecture</h1>
-                    <p class="text-sm text-gray-400">Agentic workflow orchestration graph & routing conditions</p>
-                </div>
-            </div>
-        </header>
-
-        <!-- Main Graph Section -->
-        <div class="flex-1 bg-gray-900/40 border border-gray-800/80 rounded-2xl p-6 flex flex-col gap-6 shadow-xl relative overflow-hidden backdrop-blur">
-            <div class="absolute inset-0 bg-gradient-to-tr from-blue-500/5 to-transparent pointer-events-none"></div>
-            
-            <div class="flex justify-between items-center text-xs text-gray-500 font-mono">
-                <span>FORMAT: MERMAID DIAGRAM</span>
-                <span>STATUS: COMPILED</span>
-            </div>
-
-            <!-- Graph Canvas -->
-            <div class="flex-grow flex items-center justify-center p-4 bg-gray-950/50 rounded-xl border border-gray-800/50 overflow-auto min-h-[450px]">
-                <pre class="mermaid w-full flex justify-center">
-{mermaid_graph}
                 </pre>
             </div>
             
@@ -136,21 +131,12 @@ html_template = f"""<!DOCTYPE html>
     </div>
 
     <script>
-        mermaid.initialize({{
+        mermaid.initialize({
             startOnLoad: true,
             theme: 'dark',
             securityLevel: 'loose',
             fontFamily: 'Outfit, system-ui, sans-serif'
-        }});
+        });
     </script>
 </body>
 </html>
-"""
-
-try:
-    output_path = "pipeline_architecture.html"
-    with open(output_path, "w", encoding="utf-8") as f:
-        f.write(html_template)
-    print(f"Successfully generated standalone pipeline visualization: {output_path}")
-except Exception as e:
-    print(f"Error saving HTML: {e}")
